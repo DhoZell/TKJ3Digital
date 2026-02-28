@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="theme-color" content="#080810"/>
+<title>TKJ Digital</title>
+<link rel="manifest" href="manifest.json"/>
+<link rel="apple-touch-icon" href="icon-192.png"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=Space+Mono&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#080810;--bg2:#0e0e1a;--card:#111120;
+  --b1:rgba(255,255,255,0.07);--b2:rgba(255,255,255,0.13);
+  --acc:#b8ff57;--acc3:#00d4ff;--warn:#ff6b6b;
+  --text:#f2f2fa;--muted:#5a5a75;--dim:#9090aa;
+  --fd:'Syne',sans-serif;--fb:'DM Sans',sans-serif;--fm:'Space Mono',monospace;
+}
+
+html{height:100%;height:-webkit-fill-available}
+body{
+  min-height:100%;min-height:-webkit-fill-available;
+  background:var(--bg);color:var(--text);
+  font-family:var(--fb);overflow:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* SCREENS — fixed inset full */
+.screen{
+  position:fixed;
+  top:0;left:0;right:0;bottom:0;
+  overflow:hidden;
+  transition:transform 0.42s cubic-bezier(0.77,0,0.175,1),opacity 0.32s ease;
+}
+.screen.off{transform:translateX(108%);opacity:0;pointer-events:none}
+#s-home{z-index:10;background:var(--bg);display:flex;flex-direction:column}
+#s-absen,#s-jadwal{z-index:20;background:var(--bg);display:flex;flex-direction:column}
+.app-frame{width:100%;border:none;display:block;flex:1;min-height:0}
+
+/* BACK BAR */
+.back-bar{
+  flex-shrink:0;display:flex;align-items:center;gap:12px;
+  padding:13px 20px;
+  background:rgba(8,8,16,0.92);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--b2);
+  cursor:pointer;user-select:none;
+}
+.back-bar:active{opacity:0.6}
+.back-chip{display:flex;align-items:center;gap:7px;background:rgba(184,255,87,0.09);border:1px solid rgba(184,255,87,0.2);border-radius:999px;padding:5px 13px 5px 7px}
+.back-chip-icon{width:18px;height:18px;border-radius:50%;background:var(--acc);display:flex;align-items:center;justify-content:center}
+.back-chip-icon span{font-family:var(--fm);font-size:8px;font-weight:700;color:#080810}
+.back-chip-lbl{font-family:var(--fm);font-size:9px;font-weight:700;color:var(--acc);letter-spacing:0.1em;text-transform:uppercase}
+.back-title{font-family:var(--fd);font-size:15px;font-weight:700;color:var(--text)}
+
+/* BG GLOW */
+.g1{position:absolute;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(184,255,87,0.05) 0%,transparent 65%);top:-60px;right:-70px;pointer-events:none;animation:gf1 10s ease-in-out infinite;z-index:0}
+.g2{position:absolute;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(124,92,252,0.04) 0%,transparent 65%);bottom:100px;left:-40px;pointer-events:none;animation:gf2 13s ease-in-out infinite;z-index:0}
+@keyframes gf1{0%,100%{transform:translate(0,0)}50%{transform:translate(-12px,8px)}}
+@keyframes gf2{0%,100%{transform:translate(0,0)}50%{transform:translate(8px,-12px)}}
+
+/* HOME BODY — flex col full height */
+.home-body{
+  position:relative;z-index:1;
+  display:flex;flex-direction:column;
+  width:100%;height:100%;
+  overflow:hidden;
+}
+
+/* TOPBAR */
+.topbar{
+  flex-shrink:0;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:11px 20px;
+  background:rgba(8,8,16,0.9);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--b1);
+}
+.tl{display:flex;align-items:center;gap:10px}
+.pdot{width:8px;height:8px;border-radius:50%;background:var(--acc);animation:pdp 2.2s infinite}
+@keyframes pdp{0%{box-shadow:0 0 0 0 rgba(184,255,87,0.5)}70%{box-shadow:0 0 0 7px rgba(184,255,87,0)}100%{box-shadow:0 0 0 0 rgba(184,255,87,0)}}
+.tl-lbl{font-family:var(--fd);font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted)}
+.tl-clk{font-family:var(--fd);font-size:21px;font-weight:800;color:var(--text);letter-spacing:0.04em;line-height:1;margin-top:2px}
+.tr{text-align:right}
+.tr-day{font-family:var(--fd);font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted)}
+.tr-date{font-family:var(--fd);font-size:12px;font-weight:600;color:var(--dim);margin-top:2px}
+
+/* TICKER */
+.ticker{flex-shrink:0;overflow:hidden;border-bottom:1px solid var(--b1);padding:7px 0;background:var(--bg2)}
+.tick-track{display:flex;animation:tk 22s linear infinite;width:max-content}
+@keyframes tk{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.ti{font-family:var(--fm);font-size:9px;color:var(--muted);letter-spacing:0.14em;text-transform:uppercase;padding:0 15px;white-space:nowrap}
+.ti.on{color:var(--acc)}
+
+/* SCROLL AREA — sisa height */
+.scroll-area{
+  flex:1 1 0;min-height:0;
+  overflow-y:auto;overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;
+}
+.scroll-area::-webkit-scrollbar{display:none}
+
+/* INNER */
+.inner{padding:26px 20px 100px}
+
+/* GREETING */
+.greet{margin-bottom:20px}
+.greet-tag{font-family:var(--fm);font-size:9px;letter-spacing:0.18em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.greet-h{font-family:var(--fd);font-weight:800;line-height:0.96;letter-spacing:-0.01em;color:var(--text);font-size:clamp(32px,9vw,46px);margin-bottom:8px}
+.greet-h .acc{color:var(--acc)}
+.greet-sub{font-size:12px;font-weight:400;color:var(--dim);line-height:1.5}
+
+/* DIVIDER */
+.divider{height:1px;background:var(--b1);margin-bottom:20px}
+
+/* SECTION LABEL */
+.sec-lbl{font-family:var(--fd);font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+
+/* CARD LIST */
+.card-list{display:flex;flex-direction:column;gap:8px;align-items:center;margin-bottom:20px}
+
+/* BASE CARD */
+.mc{
+  background:var(--card);border:1px solid var(--b2);
+  border-left:4px solid var(--acc);border-radius:12px;
+  padding:13px 16px 13px 20px;
+  cursor:pointer;user-select:none;
+  display:flex;align-items:center;justify-content:space-between;
+  position:relative;overflow:hidden;width:88%;
+  transition:border-color 0.2s,transform 0.16s cubic-bezier(0.34,1.56,0.64,1);
+}
+.mc::before{content:'';position:absolute;inset:0;border-radius:12px;background:linear-gradient(90deg,rgba(184,255,87,0.05) 0%,transparent 40%);opacity:0;transition:opacity 0.2s}
+.mc:hover::before{opacity:1}
+.mc:active{transform:scale(0.97)}
+.mc.jadwal{border-left-color:var(--acc3)}
+.mc.jadwal::before{background:linear-gradient(90deg,rgba(0,212,255,0.05) 0%,transparent 40%)}
+.mc.warn{border-left-color:rgba(255,107,107,0.4);background:rgba(255,107,107,0.03)}
+.mc.warn::before{background:linear-gradient(90deg,rgba(255,107,107,0.04) 0%,transparent 40%)}
+
+.mc-left{display:flex;flex-direction:column;gap:2px}
+.mc-num{font-family:var(--fm);font-size:8px;color:var(--muted);letter-spacing:0.1em;margin-bottom:3px}
+.mc-name{font-family:var(--fd);font-size:17px;font-weight:800;line-height:1.05;letter-spacing:-0.01em;color:var(--text)}
+.mc.warn .mc-name{color:rgba(255,255,255,0.4)}
+.mc-desc{font-size:11px;font-weight:400;color:var(--muted);line-height:1.4;margin-top:3px}
+.mc-right{display:flex;align-items:center;gap:6px;flex-shrink:0;margin-left:12px}
+.mc-cta-t{font-family:var(--fd);font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--acc);white-space:nowrap}
+.mc.jadwal .mc-cta-t{color:var(--acc3)}
+.mc-cta-l{width:14px;height:2px;background:var(--acc);border-radius:99px;transition:width 0.2s}
+.mc.jadwal .mc-cta-l{background:var(--acc3)}
+.mc:hover .mc-cta-l{width:22px}
+.warn-badge{font-family:var(--fm);font-size:8px;font-weight:700;color:var(--warn);letter-spacing:0.08em;text-transform:uppercase;background:rgba(255,107,107,0.1);border:1px solid rgba(255,107,107,0.2);border-radius:4px;padding:2px 6px;white-space:nowrap;flex-shrink:0}
+
+/* FOOTER — sticky di bottom scroll */
+.footer{
+  flex-shrink:0;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 20px 14px;
+  border-top:1px solid var(--b1);
+  background:var(--bg);
+}
+.f-by{font-family:var(--fm);font-size:9px;color:var(--muted);letter-spacing:0.12em;text-transform:uppercase}
+.f-by b{color:var(--dim);font-weight:700}
+.f-dot{width:5px;height:5px;border-radius:50%;background:var(--acc);opacity:0.45}
+
+/* WARNING MODAL */
+.modal-overlay{position:fixed;inset:0;z-index:9998;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.22s ease}
+.modal-overlay.show{opacity:1;pointer-events:all}
+.modal{background:#13131f;border:1px solid rgba(255,107,107,0.25);border-top:3px solid var(--warn);border-radius:16px;padding:28px 24px 22px;width:82%;max-width:320px;transform:scale(0.9) translateY(10px);transition:transform 0.26s cubic-bezier(0.34,1.56,0.64,1)}
+.modal-overlay.show .modal{transform:scale(1) translateY(0)}
+.modal-icon{font-size:28px;margin-bottom:12px;line-height:1}
+.modal-title{font-family:var(--fd);font-size:18px;font-weight:800;color:var(--text);margin-bottom:6px}
+.modal-desc{font-size:13px;font-weight:400;color:var(--dim);line-height:1.6;margin-bottom:20px}
+.modal-name{color:var(--warn);font-weight:600}
+.modal-btn{width:100%;background:rgba(255,107,107,0.1);border:1px solid rgba(255,107,107,0.3);border-radius:10px;padding:12px;cursor:pointer;font-family:var(--fd);font-size:13px;font-weight:700;color:var(--warn);letter-spacing:0.05em;transition:background 0.18s}
+.modal-btn:hover{background:rgba(255,107,107,0.18)}
+.modal-btn:active{transform:scale(0.97)}
+
+/* INSTALL BANNER */
+#install-banner{
+  position:fixed;bottom:0;left:0;right:0;z-index:9999;
+  padding:12px 16px;
+  padding-bottom:calc(12px + env(safe-area-inset-bottom,0px));
+  background:rgba(14,14,26,0.97);
+  border-top:1px solid rgba(184,255,87,0.2);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  animation:slideUp 0.3s ease;
+}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.inst-content{display:flex;align-items:center;gap:12px}
+.inst-icon{font-size:24px;flex-shrink:0}
+.inst-text{flex:1;min-width:0}
+.inst-title{font-family:var(--fd);font-size:14px;font-weight:700;color:var(--text)}
+.inst-sub{font-size:11px;color:var(--muted);margin-top:1px}
+.inst-btn{background:var(--acc);color:#080810;border:none;font-family:var(--fd);font-size:13px;font-weight:800;padding:9px 18px;border-radius:99px;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:opacity 0.15s}
+.inst-btn:active{opacity:0.8}
+.inst-x{background:none;border:none;color:var(--muted);font-size:16px;cursor:pointer;padding:4px;flex-shrink:0}
+
+/* ANIMS */
+.topbar{animation:au 0.4s 0.04s both}
+.ticker{animation:au 0.4s 0.09s both}
+.inner{animation:au 0.4s 0.14s both}
+.footer{animation:au 0.4s 0.24s both}
+@keyframes au{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* LANDSCAPE */
+@media (orientation:landscape) and (max-height:450px){
+  .topbar{padding:7px 20px}.tl-clk{font-size:17px}
+  .ticker{padding:5px 0}
+  .inner{padding:12px 20px 80px}
+  .greet{margin-bottom:10px}.greet-h{font-size:26px}.greet-sub{display:none}
+  .divider{margin-bottom:10px}
+  .mc{padding:9px 14px 9px 18px}.mc-desc{display:none}.mc-name{font-size:15px}
+}
+</style>
+</head>
+<body>
+
+<!-- HOME -->
+<div id="s-home" class="screen">
+  <div class="g1"></div><div class="g2"></div>
+  <div class="home-body">
+
+    <div class="topbar">
+      <div class="tl">
+        <div class="pdot"></div>
+        <div>
+          <div class="tl-lbl">WEB KELAS XI TKJ</div>
+          <div class="tl-clk" id="hclock">00:00</div>
+        </div>
+      </div>
+      <div class="tr">
+        <div class="tr-day" id="hday">—</div>
+        <div class="tr-date" id="hdate">—</div>
+      </div>
+    </div>
+
+    <div class="ticker"><div class="tick-track" id="ticker"></div></div>
+
+    <div class="scroll-area">
+      <div class="inner">
+
+        <div class="greet">
+          <p class="greet-tag">TKJ Digital &mdash; SMK AS SALAFIYAH</p>
+          <h1 class="greet-h">Selamat<br><span class="acc">Datang.</span></h1>
+          <p class="greet-sub">Absen &amp; jadwal kelas dalam satu tempat.<br>No drama, langsung gas.</p>
+        </div>
+
+        <div class="divider"></div>
+
+        <p class="sec-lbl">Pilih menu</p>
+        <div class="card-list">
+          <div class="mc" onclick="goTo('absen')">
+            <div class="mc-left">
+              <div class="mc-num">01 / 02</div>
+              <div class="mc-name">Absen Kelas</div>
+              <div class="mc-desc">Catat kehadiran sebelum waktu habis.</div>
+            </div>
+            <div class="mc-right"><span class="mc-cta-t">Buka</span><div class="mc-cta-l"></div></div>
+          </div>
+          <div class="mc jadwal" onclick="goTo('jadwal')">
+            <div class="mc-left">
+              <div class="mc-num">02 / 02</div>
+              <div class="mc-name">Jadwal Mapel</div>
+              <div class="mc-desc">Live jadwal plus notif tiap mapel.</div>
+            </div>
+            <div class="mc-right"><span class="mc-cta-t">Buka</span><div class="mc-cta-l"></div></div>
+          </div>
+        </div>
+
+        <p class="sec-lbl" style="margin-top:4px">Segera hadir</p>
+        <div class="card-list">
+          <div class="mc warn" onclick="showWarn('Nilai Raport','Rekap nilai per semester.')">
+            <div class="mc-left"><div class="mc-num">03</div><div class="mc-name">Nilai Raport</div><div class="mc-desc">Rekap nilai per semester.</div></div>
+            <div class="mc-right"><span class="warn-badge">Soon</span></div>
+          </div>
+          <div class="mc warn" onclick="showWarn('Tugas & PR','Pantau tugas yang belum dikumpul.')">
+            <div class="mc-left"><div class="mc-num">04</div><div class="mc-name">Tugas &amp; PR</div><div class="mc-desc">Pantau tugas yang belum dikumpul.</div></div>
+            <div class="mc-right"><span class="warn-badge">Soon</span></div>
+          </div>
+          <div class="mc warn" onclick="showWarn('Info Sekolah','Pengumuman terbaru dari sekolah.')">
+            <div class="mc-left"><div class="mc-num">05</div><div class="mc-name">Info Sekolah</div><div class="mc-desc">Pengumuman terbaru dari sekolah.</div></div>
+            <div class="mc-right"><span class="warn-badge">Soon</span></div>
+          </div>
+          <div class="mc warn" onclick="showWarn('Rekap Absensi','Histori kehadiran kamu.')">
+            <div class="mc-left"><div class="mc-num">06</div><div class="mc-name">Rekap Absensi</div><div class="mc-desc">Histori kehadiran kamu.</div></div>
+            <div class="mc-right"><span class="warn-badge">Soon</span></div>
+          </div>
+          <div class="mc warn" onclick="showWarn('Kontak Guru','Info kontak dan jadwal piket guru.')">
+            <div class="mc-left"><div class="mc-num">07</div><div class="mc-name">Kontak Guru</div><div class="mc-desc">Info kontak dan jadwal piket guru.</div></div>
+            <div class="mc-right"><span class="warn-badge">Soon</span></div>
+          </div>
+          <div class="mc warn" onclick="showWarn('Kalender Akademik','Jadwal ujian, libur & kegiatan sekolah.')">
+            <div class="mc-left"><div class="mc-num">08</div><div class="mc-name">Kalender Akademik</div><div class="mc-desc">Jadwal ujian, libur &amp; kegiatan.</div></div>
+            <div class="mc-right"><span class="warn-badge">Soon</span></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="footer">
+      <div class="f-by">by <b>Ridho TKJ 3</b></div>
+      <div class="f-dot"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ABSEN -->
+<div id="s-absen" class="screen off">
+  <div class="back-bar" onclick="goBack()">
+    <div class="back-chip"><div class="back-chip-icon"><span>HM</span></div><span class="back-chip-lbl">Home</span></div>
+    <span class="back-title">Absen Kelas</span>
+  </div>
+  <iframe id="frame-absen" class="app-frame" src="" title="Absen Kelas"></iframe>
+</div>
+
+<!-- JADWAL -->
+<div id="s-jadwal" class="screen off">
+  <div class="back-bar" onclick="goBack()">
+    <div class="back-chip"><div class="back-chip-icon"><span>HM</span></div><span class="back-chip-lbl">Home</span></div>
+    <span class="back-title">Jadwal Mapel</span>
+  </div>
+  <iframe id="frame-jadwal" class="app-frame" src="" title="Jadwal Kelas"></iframe>
+</div>
+
+<!-- WARNING MODAL -->
+<div class="modal-overlay" id="modal" onclick="closeWarn(event)">
+  <div class="modal">
+    <div class="modal-icon">⚠️</div>
+    <div class="modal-title">Belum Tersedia</div>
+    <div class="modal-desc"><span class="modal-name" id="modal-name">—</span><br><span id="modal-desc">—</span><br><br>Fitur ini masih dalam pengembangan. Pantau terus ya!</div>
+    <button class="modal-btn" onclick="closeWarn()">Oke, Ngerti!</button>
+  </div>
+</div>
+
+<!-- INSTALL BANNER -->
+<div id="install-banner" style="display:none">
+  <div class="inst-content">
+    <span class="inst-icon">📲</span>
+    <div class="inst-text">
+      <div class="inst-title">Install TKJ Digital</div>
+      <div class="inst-sub">Bisa dipakai tanpa internet</div>
+    </div>
+    <button id="install-btn" class="inst-btn">Install</button>
+    <button id="install-dismiss" class="inst-x">✕</button>
+  </div>
+</div>
+
+<script>
+// ── CLOCK
+const DAYS=["Minggu","Senin","Selasa","Rabu","Kamis","Jumat","Sabtu"];
+const MONS=["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"];
+function tick(){
+  const n=new Date();
+  document.getElementById('hclock').textContent=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
+  document.getElementById('hday').textContent=DAYS[n.getDay()];
+  document.getElementById('hdate').textContent=n.getDate()+' '+MONS[n.getMonth()]+' '+n.getFullYear();
+}
+tick();setInterval(tick,1000);
+
+// ── TICKER
+const raw=['XI TKJ 3','·','Absen Kelas','·','Jadwal Mapel','·','SMK','·','by Ridho','·',
+           'XI TKJ 3','·','Absen Kelas','·','Jadwal Mapel','·','SMK','·','by Ridho','·'];
+const tr=document.getElementById('ticker');
+raw.forEach((t,i)=>{const s=document.createElement('span');s.className='ti'+(i%10===0?' on':'');s.textContent=t;tr.appendChild(s);});
+
+// ── NAV
+const ld={absen:false,jadwal:false};
+function goTo(d){
+  if(!ld[d]){document.getElementById('frame-'+d).src=d+'/index.html';ld[d]=true;}
+  document.getElementById('s-home').classList.add('off');
+  document.getElementById('s-'+d).classList.remove('off');
+}
+function goBack(){
+  ['absen','jadwal'].forEach(d=>document.getElementById('s-'+d).classList.add('off'));
+  document.getElementById('s-home').classList.remove('off');
+}
+
+// ── WARNING MODAL
+function showWarn(name,desc){
+  document.getElementById('modal-name').textContent=name;
+  document.getElementById('modal-desc').textContent=desc;
+  document.getElementById('modal').classList.add('show');
+}
+function closeWarn(e){
+  if(!e||e.target===document.getElementById('modal')||e.currentTarget===document.querySelector('.modal-btn')){
+    document.getElementById('modal').classList.remove('show');
+  }
+}
+document.querySelector('.modal-btn').addEventListener('click',()=>document.getElementById('modal').classList.remove('show'));
+
+// ── PWA INSTALL
+let deferredInstall=null;
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('./sw.js').catch(()=>{});
+}
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault();
+  deferredInstall=e;
+  document.getElementById('install-banner').style.display='block';
+});
+window.addEventListener('appinstalled',()=>{
+  document.getElementById('install-banner').style.display='none';
+  deferredInstall=null;
+});
+document.getElementById('install-btn').addEventListener('click',async()=>{
+  if(!deferredInstall)return;
+  deferredInstall.prompt();
+  const r=await deferredInstall.userChoice;
+  if(r.outcome==='accepted'){document.getElementById('install-banner').style.display='none';deferredInstall=null;}
+});
+document.getElementById('install-dismiss').addEventListener('click',()=>{
+  document.getElementById('install-banner').style.display='none';
+});
+</script>
+</body>
+</html>
